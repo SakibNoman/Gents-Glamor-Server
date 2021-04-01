@@ -8,15 +8,16 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
 
-
+//MiddleWire
 app.use(cors());
 app.use(bodyParser.json())
 
+//Root API
 app.get('/', (req, res) => {
-    res.send('Hello World Node!Hi')
+    res.send('Hello World')
 })
 
-
+//Database Link
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cqpfg.mongodb.net/${process.env.DB_Name}?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -26,6 +27,7 @@ client.connect(err => {
     const productCollection = client.db("gentsGlamor").collection("products");
     const orderCollection = client.db("gentsGlamor").collection("orders");
 
+    //API to add new Order
     app.post('/addOrder', (req, res) => {
         const newOrder = req.body;
         orderCollection.insertOne(newOrder)
@@ -35,6 +37,7 @@ client.connect(err => {
 
     })
 
+    //API to filter user specific order
     app.get('/customer/order', (req, res) => {
         orderCollection.find({ email: req.query.email })
             .toArray((err, documents) => {
@@ -42,6 +45,7 @@ client.connect(err => {
             })
     })
 
+    //API to filter specific product
     app.get('/product/:id', (req, res) => {
         const id = ObjectID(req.params.id)
         productCollection.find({ _id: id })
@@ -50,6 +54,7 @@ client.connect(err => {
             })
     })
 
+    //API to find all products
     app.get('/products', (req, res) => {
         productCollection.find()
             .toArray((err, products) => {
@@ -57,6 +62,7 @@ client.connect(err => {
             })
     })
 
+    //API to delete specific product
     app.delete('/deleteProduct/:id', (req, res) => {
         const id = ObjectID(req.params.id)
         productCollection.findOneAndDelete({ _id: id })
@@ -64,6 +70,7 @@ client.connect(err => {
             .then(data => console.log("successfully deleted"))
     })
 
+    //API to add new product
     app.post('/addProduct', (req, res) => {
         const newProduct = req.body;
         productCollection.insertOne(newProduct)
