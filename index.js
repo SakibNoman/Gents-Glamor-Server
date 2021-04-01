@@ -30,10 +30,16 @@ client.connect(err => {
         const newOrder = req.body;
         orderCollection.insertOne(newOrder)
             .then(result => {
-                console.log(result.insertedCount);
                 res.send(result.insertedCount > 0)
             })
 
+    })
+
+    app.get('/customer/order', (req, res) => {
+        orderCollection.find({ email: req.query.email })
+            .toArray((err, documents) => {
+                res.send(documents)
+            })
     })
 
     app.get('/product/:id', (req, res) => {
